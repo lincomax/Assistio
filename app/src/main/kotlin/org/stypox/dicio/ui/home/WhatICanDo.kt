@@ -35,7 +35,11 @@ import org.stypox.dicio.ui.util.SkillInfoPreviews
 
 @Composable
 fun WhatICanDo(skills: List<SkillInfo>) {
-    MessageCard(containerColor = MaterialTheme.colorScheme.secondaryContainer) {
+    val isBlackTheme = MaterialTheme.colorScheme.background == Color.Black
+    MessageCard(
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        outlined = !isBlackTheme,
+    ) {
         if (skills.isEmpty()) {
             NoEnabledSkills()
 
@@ -46,7 +50,12 @@ fun WhatICanDo(skills: List<SkillInfo>) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
+                    .padding(
+                        start = 16.dp,
+                        top = if (isBlackTheme) 0.dp else 16.dp,
+                        end = 16.dp,
+                        bottom = 4.dp,
+                    ),
             )
 
             for (skill in skills) {

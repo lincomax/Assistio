@@ -1,5 +1,6 @@
 package org.stypox.dicio.ui.home
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -85,25 +86,46 @@ fun InteractionList(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
+    val isBlackTheme = MaterialTheme.colorScheme.background == Color.Black
+
     LazyColumn(
         modifier = modifier.testTag("interaction_list"),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = listState,
     ) {
-        countedItem(canBeAnchor = false) {
-            if (wakeState != null) {
-                WakeWordWidget(
-                    wakeState = wakeState,
-                    onWakeDownload = onWakeDownload,
-                    onWakeDisable = onWakeDisable,
-                )
+        if (isBlackTheme) {
+            // a single item, so that the skills list sits right below the top bar without the
+            // list spacing that would otherwise follow the (usually empty) wake word widget
+            countedItem(canBeAnchor = false) {
+                Column {
+                    if (wakeState != null) {
+                        WakeWordWidget(
+                            wakeState = wakeState,
+                            onWakeDownload = onWakeDownload,
+                            onWakeDisable = onWakeDisable,
+                        )
+                    }
+                    if (skills != null) {
+                        WhatICanDo(skills = skills)
+                    }
+                }
             }
-        }
+        } else {
+            countedItem(canBeAnchor = false) {
+                if (wakeState != null) {
+                    WakeWordWidget(
+                        wakeState = wakeState,
+                        onWakeDownload = onWakeDownload,
+                        onWakeDisable = onWakeDisable,
+                    )
+                }
+            }
 
-        countedItem(canBeAnchor = false) {
-            if (skills != null) {
-                // avoid showing anything if skills are null, i.e. not ready yet
-                WhatICanDo(skills = skills)
+            countedItem(canBeAnchor = false) {
+                if (skills != null) {
+                    // avoid showing anything if skills are null, i.e. not ready yet
+                    WhatICanDo(skills = skills)
+                }
             }
         }
 
@@ -301,6 +323,7 @@ fun SkillAnswerCardPreview(@PreviewParameter(SkillOutputPreviews::class) skillOu
 fun MessageCard(
     containerColor: Color,
     onClick: (() -> Unit)? = null,
+    outlined: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = CardDefaults.cardColors(containerColor = containerColor)
@@ -308,7 +331,7 @@ fun MessageCard(
         .fillMaxWidth()
         .padding(horizontal = 8.dp)
     // in the black theme cards are as black as the background, so outline them
-    val border = if (containerColor == MaterialTheme.colorScheme.background) {
+    val border = if (outlined && containerColor == MaterialTheme.colorScheme.background) {
         BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     } else {
         null
