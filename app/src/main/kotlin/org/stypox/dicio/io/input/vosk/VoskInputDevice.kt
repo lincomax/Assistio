@@ -28,6 +28,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -69,8 +70,13 @@ class VoskInputDevice(
     @ApplicationContext appContext: Context,
     private val okHttpClient: OkHttpClient,
     localeManager: LocaleManager,
-    private val silencesBeforeStop: StateFlow<Int>
+    private val silencesBeforeStop: StateFlow<Int>,
+    private val largeModel: StateFlow<Boolean>,
 ) : SttInputDevice {
+
+    // the locale currently in use, needed to reinitialize when the model size setting changes
+    @Volatile
+    private var currentLocale: Locale
 
     private val _state: MutableStateFlow<VoskState>
     private val _uiState: MutableStateFlow<SttState>
@@ -93,6 +99,7 @@ class VoskInputDevice(
         val (firstLocale, nextLocaleFlow) = localeManager.locale
             .distinctUntilChangedBlockingFirst()
 
+        currentLocale = firstLocale
         val initialState = init(firstLocale)
         _state = MutableStateFlow(initialState)
         _uiState = MutableStateFlow(initialState.toUiState())
@@ -104,13 +111,26 @@ class VoskInputDevice(
 
         scope.launch {
             // perform initialization again every time the locale changes
-            nextLocaleFlow.collect { reinit(it) }
+            nextLocaleFlow.collect {
+                currentLocale = it
+                reinit(it)
+            }
+        }
+
+        scope.launch {
+            // switching between the small and the large model requires a different download
+            largeModel.drop(1).collect { reinit(currentLocale) }
         }
     }
 
     private fun init(locale: Locale): VoskState {
         // choose the model url based on the locale
-        val modelUrl = LocaleUtils.resolveValueForSupportedLocale(locale, MODEL_URLS)
+        val smallModelUrl = LocaleUtils.resolveValueForSupportedLocale(locale, MODEL_URLS)
+        val modelUrl = if (largeModel.value) {
+            LocaleUtils.resolveValueForSupportedLocale(locale, LARGE_MODEL_URLS) ?: smallModelUrl
+        } else {
+            smallModelUrl
+        }
 
         // the model url may change if the user changes app language, or in case of model updates
         val modelUrlChanged = try {
@@ -450,6 +470,14 @@ class VoskInputDevice(
         private const val SAMPLE_RATE = 44100.0f
         private const val ALTERNATIVE_COUNT = 5
         private val TAG = VoskInputDevice::class.simpleName
+
+        /**
+         * Larger and more accurate models from [Vosk](https://alphacephei.com/vosk/models), used
+         * instead of [MODEL_URLS] when the large model setting is on
+         */
+        val LARGE_MODEL_URLS = mapOf(
+            "en" to "https://alphacephei.com/vosk/models/vosk-model-en-us-0.22-lgraph.zip",
+        )
 
         /**
          * All small models from [Vosk](https://alphacephei.com/vosk/models)

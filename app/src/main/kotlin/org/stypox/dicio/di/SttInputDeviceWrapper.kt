@@ -60,6 +60,7 @@ class SttInputDeviceWrapperImpl(
     private var inputDeviceSetting: InputDevice
     private var sttPlaySoundSetting: SttPlaySound
     private val silencesBeforeStop: StateFlow<Int>
+    private val voskLargeModel: StateFlow<Boolean>
     private var sttInputDevice: SttInputDevice?
 
     // null means that the user has not enabled any STT input device
@@ -78,6 +79,8 @@ class SttInputDeviceWrapperImpl(
         inputDeviceSetting = firstSettings.first
         sttPlaySoundSetting = firstSettings.second
         silencesBeforeStop = dataStore.data.map(SttInputDevice::getSttSilenceDurationOrDefault)
+            .toStateFlowDistinctBlockingFirst(scope)
+        voskLargeModel = dataStore.data.map { it.voskLargeModel }
             .toStateFlowDistinctBlockingFirst(scope)
         sttInputDevice = buildInputDevice(inputDeviceSetting)
         scope.launch {
@@ -106,7 +109,9 @@ class SttInputDeviceWrapperImpl(
         return when (setting) {
             UNRECOGNIZED,
             INPUT_DEVICE_UNSET,
-            INPUT_DEVICE_VOSK -> VoskInputDevice(appContext, okHttpClient, localeManager, silencesBeforeStop)
+            INPUT_DEVICE_VOSK -> VoskInputDevice(
+                appContext, okHttpClient, localeManager, silencesBeforeStop, voskLargeModel
+            )
             INPUT_DEVICE_EXTERNAL_POPUP ->
                 ExternalPopupInputDevice(appContext, activityForResultManager, localeManager)
             INPUT_DEVICE_NOTHING -> null

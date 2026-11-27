@@ -25,4 +25,7 @@
     <string name="skill_reminder_not_installed">Tasks.org is not installed</string>
     <string name="skill_reminder_failed">I could not add it to Tasks.org</string>
     <string name="skill_reminder_open_tasks">Open in Tasks.org</string>
+    <string name="pref_vosk_large_model_title">Large English speech model</string>
+    <string name="pref_vosk_large_model_summary_off">Using the small model (40 MB)</string>
+    <string name="pref_vosk_large_model_summary_on">Using the large model (128 MB), with fewer mistakes. It downloads the next time you use the microphone</string>
 </resources>

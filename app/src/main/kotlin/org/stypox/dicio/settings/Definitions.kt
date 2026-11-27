@@ -1,6 +1,7 @@
 package org.stypox.dicio.settings
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.BreakfastDining
@@ -216,4 +217,12 @@ fun sttPlaySound() = ListSetting(
             name = stringResource(R.string.pref_stt_play_sound_none),
         ),
     ),
+)
+
+@Composable
+fun voskLargeModel() = BooleanSetting(
+    title = stringResource(R.string.pref_vosk_large_model_title),
+    icon = Icons.Default.GraphicEq,
+    descriptionOff = stringResource(R.string.pref_vosk_large_model_summary_off),
+    descriptionOn = stringResource(R.string.pref_vosk_large_model_summary_on),
 )

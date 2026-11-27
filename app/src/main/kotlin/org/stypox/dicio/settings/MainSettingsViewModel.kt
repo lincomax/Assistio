@@ -75,4 +75,6 @@ class MainSettingsViewModel @Inject constructor(
         updateData { it.setSttSilenceDuration(value) }
     fun setAutoFinishSttPopup(value: Boolean) =
         updateData { it.setAutoFinishSttPopup(value) }
+    fun setVoskLargeModel(value: Boolean) =
+        updateData { it.setVoskLargeModel(value) }
 }

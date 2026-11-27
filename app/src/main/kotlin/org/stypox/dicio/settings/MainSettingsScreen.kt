@@ -195,6 +195,12 @@ private fun MainSettingsScreen(
             )
         }
         item {
+            voskLargeModel().Render(
+                settings.voskLargeModel,
+                viewModel::setVoskLargeModel
+            )
+        }
+        item {
             sttAutoFinish().Render(
                 settings.autoFinishSttPopup,
                 viewModel::setAutoFinishSttPopup
