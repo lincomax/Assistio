@@ -4,10 +4,6 @@ Assistio is a *free and open source* **voice assistant** running on Android. It 
 
 <p align="center">
     <img width="80" alt="Assistio logo" src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher.png">
-    &emsp;
-    <a href="https://github.com/lincomax/Assistio/releases">
-        <img width="206" alt="Get it on GitHub" src="./meta/get-it-on-github.png">
-    </a>
 </p>
 
 ## Skills
