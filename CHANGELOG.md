@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026.11.4
+
+- Punctuation added by speech engines at the end of what you say is ignored, so places, contacts and app names no longer get a trailing period
+- Switching between the small and large speech model no longer downloads it again
+- Setting to delete the speech model you're not using
+- Black theme: the skills list has no outline and sits right below the top bar
+
 ## 2026.11.3
 
 - Black launch screen with the white Assistio logo

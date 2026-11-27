@@ -103,6 +103,7 @@ fun InteractionList(
                             wakeState = wakeState,
                             onWakeDownload = onWakeDownload,
                             onWakeDisable = onWakeDisable,
+                            bottomSpacing = 16.dp,
                         )
                     }
                     if (skills != null) {

@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.shreyaspatil.permissionflow.compose.rememberMultiplePermissionState
 import dev.shreyaspatil.permissionflow.compose.rememberPermissionFlowRequestLauncher
@@ -52,6 +53,8 @@ fun WakeWordWidget(
     wakeState: WakeState,
     onWakeDownload: () -> Unit,
     onWakeDisable: () -> Unit,
+    // space to leave below the card, only when the card is actually shown
+    bottomSpacing: Dp = 0.dp,
 ) {
     val permissionsState by rememberMultiplePermissionState(*wakeWordPermissions)
     val launcher = rememberPermissionFlowRequestLauncher()
@@ -63,17 +66,25 @@ fun WakeWordWidget(
             onWakeDownload = onWakeDownload,
             onWakeDisable = onWakeDisable,
         )
+        if (bottomSpacing > 0.dp) {
+            Spacer(modifier = Modifier.height(bottomSpacing))
+        }
 
     } else when (wakeState) {
         WakeState.NotDownloaded,
         is WakeState.Downloading,
         is WakeState.ErrorDownloading,
-        is WakeState.ErrorLoading -> WakeWordWidgetImpl(
-            wakeState = wakeState,
-            onWakeGrantPermissions = {},
-            onWakeDownload = onWakeDownload,
-            onWakeDisable = onWakeDisable,
-        )
+        is WakeState.ErrorLoading -> {
+            WakeWordWidgetImpl(
+                wakeState = wakeState,
+                onWakeGrantPermissions = {},
+                onWakeDownload = onWakeDownload,
+                onWakeDisable = onWakeDisable,
+            )
+            if (bottomSpacing > 0.dp) {
+                Spacer(modifier = Modifier.height(bottomSpacing))
+            }
+        }
 
         else -> {}
     }
