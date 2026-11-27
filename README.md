@@ -19,6 +19,8 @@ Currently, Assistio can respond to:
 - **open**: opens an app on your device - _Open NewPipe_
 - **calculator**: evaluates basic calculations - _What is four thousand and two times three minus a million divided by three hundred?_
 - **telephone**: view and call contacts - _Call Mom_
+- **text messages**: send a text to a contact after reading it back for a spoken yes - _Text Mom saying I am on my way_
+- **reminders**: add reminders and tasks to **Tasks.org** - _Remind me to call Mom at noon_
 - **timer**: set, query and cancel timers - _Set a timer for five minutes_
 - **current time**: query current time - _What time is it?_
 - **navigation**: opens the navigation app at the requested position - _Take me to New York, fifteenth avenue_
