@@ -33,8 +33,8 @@ android {
         applicationId = "ass.is.tio"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 2026110002
-        versionName = "2026.11.2"
+        versionCode = 2026110003
+        versionName = "2026.11.3"
         testInstrumentationRunner = "org.stypox.dicio.CustomTestRunner"
 
         vectorDrawables.useSupportLibrary = true

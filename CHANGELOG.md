@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026.11.3
+
+- Black launch screen with the white Assistio logo
+- Setting for a large English speech model (128 MB) that makes fewer recognition mistakes than the small one
+
 ## 2026.11.2
 
 - New app icon and sidebar logo (black in light mode, white in dark mode)

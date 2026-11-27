@@ -1,0 +1,3 @@
+New:
+• Black launch screen with the white Assistio logo
+• Setting for a large English speech model (128 MB) that makes fewer recognition mistakes than the small one
