@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="active_skills">Active Skills:</string>
     <string name="perm_send_sms">send text messages</string>
     <string name="perm_tasks_org">add tasks and reminders to Tasks.org</string>
 
     <string name="skill_name_sms">Text messages</string>
-    <string name="skill_sentence_example_sms">Text Tom saying I am on my way</string>
+    <string name="skill_sentence_example_sms">Text Mom saying I am on my way</string>
     <string name="skill_sms_unknown_contact">No contact found, try again</string>
     <string name="skill_sms_found_contacts">I found %1$d contacts, which one should I text?</string>
     <string name="skill_sms_ask_message">What should the message to %1$s say?</string>
@@ -15,7 +16,7 @@
     <string name="skill_sms_failed">I could not send the message</string>
 
     <string name="skill_name_reminder">Reminders</string>
-    <string name="skill_sentence_example_reminder">Remind me to call mom tomorrow at 5 pm</string>
+    <string name="skill_sentence_example_reminder">Remind me to call Mom at noon</string>
     <string name="skill_reminder_ask_what">What should I remind you about?</string>
     <string name="skill_reminder_ask_when">When should I remind you?</string>
     <string name="skill_reminder_set">OK, I will remind you %2$s: %1$s</string>

@@ -1,5 +1,7 @@
 package org.stypox.dicio.ui.home
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -15,8 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -110,7 +109,7 @@ fun InteractionList(
 
         interactions.forEach { interaction ->
             countedItem(canBeAnchor = false) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(4.dp))
             }
             interaction.questionsAnswers.forEach {
                 if (it.question != null) {
@@ -205,21 +204,13 @@ fun InteractionListPreview(
 @Preview
 @Composable
 fun PendingQuestionCard(@PreviewParameter(UserInputPreviews::class) userInput: String) {
-    MessageCard(containerColor = MaterialTheme.colorScheme.tertiaryContainer) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(12.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = null,
-            )
-            Text(
-                text = userInput,
-                fontStyle = FontStyle.Italic,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
-            )
-        }
+    UserBubble {
+        Text(
+            text = userInput,
+            fontStyle = FontStyle.Italic,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+        )
     }
 }
 
@@ -229,22 +220,35 @@ fun ConfirmedQuestionCard(
     @PreviewParameter(UserInputPreviews::class) userInput: String,
     onClick: (String) -> Unit = {},
 ) {
-    MessageCard(
-        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        onClick = { onClick(userInput) },
+    UserBubble(onClick = { onClick(userInput) }) {
+        Text(
+            text = userInput,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+        )
+    }
+}
+
+/** What the user said: a chat bubble on the right side, as wide as its text. */
+@Composable
+private fun UserBubble(
+    onClick: (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.CenterEnd,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 48.dp, end = 8.dp),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(12.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = null,
-            )
-            Text(
-                text = userInput,
-                style = MaterialTheme.typography.titleMedium,
-            )
+        val colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        )
+        val shape = RoundedCornerShape(20.dp, 20.dp, 4.dp, 20.dp)
+        if (onClick == null) {
+            Card(colors = colors, shape = shape, content = content)
+        } else {
+            Card(onClick = onClick, colors = colors, shape = shape, content = content)
         }
     }
 }
@@ -276,10 +280,10 @@ fun LoadingAnswerCard(@PreviewParameter(SkillInfoPreviews::class) skill: SkillIn
 fun SkillAnswerCard(content: @Composable BoxScope.() -> Unit) {
     MessageCard(containerColor = MaterialTheme.colorScheme.secondaryContainer) {
         Box(
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             content = content,
         )
     }
@@ -303,9 +307,21 @@ fun MessageCard(
     val modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 8.dp)
-    if (onClick == null) {
-        Card(colors = colors, modifier = modifier, content = content)
+    // in the black theme cards are as black as the background, so outline them
+    val border = if (containerColor == MaterialTheme.colorScheme.background) {
+        BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     } else {
-        Card(onClick = onClick, modifier = modifier, colors = colors, content = content)
+        null
+    }
+    if (onClick == null) {
+        Card(colors = colors, border = border, modifier = modifier, content = content)
+    } else {
+        Card(
+            onClick = onClick,
+            modifier = modifier,
+            colors = colors,
+            border = border,
+            content = content,
+        )
     }
 }

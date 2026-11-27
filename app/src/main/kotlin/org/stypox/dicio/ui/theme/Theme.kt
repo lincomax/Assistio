@@ -3,6 +3,7 @@ package org.stypox.dicio.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
@@ -308,18 +309,59 @@ fun AppTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme.let {
-            if (themeType == BLACK) {
-                it.copy(
-                    background = Color.Black,
-                    surface = Color.Black,
-                )
-            } else {
-                it
-            }
+        colorScheme = when (themeType) {
+            LIGHT -> colorScheme
+            DARK -> if (dynamicColors) colorScheme else neutralDark(colorScheme)
+            BLACK -> black(colorScheme)
         },
         typography = AppTypography,
         content = content
     )
 }
 
+
+/** Neutral grey dark theme: blue is kept only as an accent. */
+private fun neutralDark(scheme: ColorScheme) = scheme.copy(
+    background = Color(0xFF121212),
+    onBackground = Color(0xFFE6E6E6),
+    surface = Color(0xFF121212),
+    onSurface = Color(0xFFE6E6E6),
+    surfaceVariant = Color(0xFF2C2C2C),
+    onSurfaceVariant = Color(0xFFBDBDBD),
+    surfaceDim = Color(0xFF121212),
+    surfaceBright = Color(0xFF333333),
+    surfaceContainerLowest = Color(0xFF0C0C0C),
+    surfaceContainerLow = Color(0xFF1A1A1A),
+    surfaceContainer = Color(0xFF1E1E1E),
+    surfaceContainerHigh = Color(0xFF252525),
+    surfaceContainerHighest = Color(0xFF2C2C2C),
+    secondaryContainer = Color(0xFF1E1E1E),
+    onSecondaryContainer = Color(0xFFE6E6E6),
+    tertiaryContainer = Color(0xFF263247),
+    onTertiaryContainer = Color(0xFFDCE3F2),
+    outline = Color(0xFF5C5C5C),
+    outlineVariant = Color(0xFF3A3A3A),
+)
+
+/** Pure black theme: cards are black too, separated by a thin outline (see MessageCard). */
+private fun black(scheme: ColorScheme) = scheme.copy(
+    background = Color.Black,
+    onBackground = Color(0xFFE6E6E6),
+    surface = Color.Black,
+    onSurface = Color(0xFFE6E6E6),
+    surfaceVariant = Color(0xFF1A1A1A),
+    onSurfaceVariant = Color(0xFFBDBDBD),
+    surfaceDim = Color.Black,
+    surfaceBright = Color(0xFF1F1F1F),
+    surfaceContainerLowest = Color.Black,
+    surfaceContainerLow = Color.Black,
+    surfaceContainer = Color(0xFF0A0A0A),
+    surfaceContainerHigh = Color(0xFF121212),
+    surfaceContainerHighest = Color(0xFF1A1A1A),
+    secondaryContainer = Color.Black,
+    onSecondaryContainer = Color(0xFFE6E6E6),
+    tertiaryContainer = Color(0xFF172033),
+    onTertiaryContainer = Color(0xFFDCE3F2),
+    outline = Color(0xFF4A4A4A),
+    outlineVariant = Color(0xFF2A2A2A),
+)
