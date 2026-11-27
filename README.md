@@ -13,7 +13,7 @@ Assistio is a *free and open source* **voice assistant** running on Android. It 
 ## Skills
 
 Currently, Assistio can respond to:
-- **search**: looks up information on **DuckDuckGo** (and in the future more engines) - _Search for Dicio_
+- **search**: looks up information on **DuckDuckGo** (and in the future more engines) - _Search for cat toys_
 - **weather**: collects weather information from **OpenWeatherMap** - _What's the weather like?_
 - **lyrics**: shows **Genius** lyrics for songs - _What's the song that goes we will we will rock you?_
 - **open**: opens an app on your device - _Open NewPipe_
