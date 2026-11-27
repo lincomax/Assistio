@@ -6,10 +6,12 @@ import androidx.datastore.core.DataStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.stypox.dicio.di.WakeDeviceWrapper
+import org.stypox.dicio.io.input.vosk.VoskInputDevice
 import org.stypox.dicio.io.wake.oww.OpenWakeWordDevice
 import org.stypox.dicio.settings.datastore.InputDevice
 import org.stypox.dicio.settings.datastore.Language
@@ -77,4 +79,26 @@ class MainSettingsViewModel @Inject constructor(
         updateData { it.setAutoFinishSttPopup(value) }
     fun setVoskLargeModel(value: Boolean) =
         updateData { it.setVoskLargeModel(value) }
+
+    // how many bytes the downloaded speech models that are not in use take up
+    private val _unusedVoskModelsBytes = MutableStateFlow(0L)
+    val unusedVoskModelsBytes: StateFlow<Long> = _unusedVoskModelsBytes
+
+    fun refreshUnusedVoskModels() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _unusedVoskModelsBytes.value = try {
+                VoskInputDevice.unusedModelFiles(getApplication<Application>().filesDir)
+                    .sumOf { file -> file.walkBottomUp().filter { it.isFile }.sumOf { it.length() } }
+            } catch (_: Exception) {
+                0L
+            }
+        }
+    }
+
+    fun deleteUnusedVoskModels() {
+        viewModelScope.launch(Dispatchers.IO) {
+            VoskInputDevice.deleteUnusedModels(getApplication<Application>().filesDir)
+            _unusedVoskModelsBytes.value = 0L
+        }
+    }
 }

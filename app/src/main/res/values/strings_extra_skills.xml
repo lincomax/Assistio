@@ -27,5 +27,8 @@
     <string name="skill_reminder_open_tasks">Open in Tasks.org</string>
     <string name="pref_vosk_large_model_title">Large English speech model</string>
     <string name="pref_vosk_large_model_summary_off">Using the small model (40 MB)</string>
-    <string name="pref_vosk_large_model_summary_on">Using the large model (128 MB), with fewer mistakes. It downloads the next time you use the microphone</string>
+    <string name="pref_vosk_large_model_summary_on">Using the large model (128 MB), with fewer mistakes but slower. Each model only needs to be downloaded once</string>
+    <string name="pref_vosk_delete_unused_title">Delete unused speech model</string>
+    <string name="pref_vosk_delete_unused_summary">Frees %1$s used by the model you switched away from</string>
+    <string name="pref_vosk_delete_unused_none">No unused speech model is downloaded</string>
 </resources>

@@ -87,9 +87,13 @@ class VoskInputDevice(
 
     private val filesDir: File = appContext.filesDir
     private val cacheDir: File = appContext.cacheDir
-    private val modelZipFile: File get() = File(filesDir, "vosk-model.zip")
-    private val sameModelUrlCheck: File get() = File(filesDir, "vosk-model-url")
-    private val modelDirectory: File get() = File(filesDir, "vosk-model")
+    // each model has its own files named after its download, so that switching between models
+    // (e.g. small and large) does not require downloading them again
+    @Volatile
+    private var activeModelKey: String = LEGACY_MODEL_KEY
+    private val modelZipFile: File get() = File(filesDir, "$activeModelKey.zip")
+    private val sameModelUrlCheck: File get() = File(filesDir, "$activeModelKey-url")
+    private val modelDirectory: File get() = File(filesDir, activeModelKey)
     private val modelExistFileCheck: File get() = File(modelDirectory, "ivector")
 
     init {
@@ -132,6 +136,18 @@ class VoskInputDevice(
             smallModelUrl
         }
 
+        // if the modelUrl is null, then the current locale is not supported by any Vosk model
+        if (modelUrl == null) {
+            return NotAvailable
+        }
+        migrateLegacyModel(filesDir)
+        activeModelKey = modelKeyFor(modelUrl)
+        try {
+            File(filesDir, ACTIVE_MODEL_FILE).writeText(activeModelKey)
+        } catch (e: IOException) {
+            Log.w(TAG, "Can't save which Vosk model is in use", e)
+        }
+
         // the model url may change if the user changes app language, or in case of model updates
         val modelUrlChanged = try {
             sameModelUrlCheck.readText() != modelUrl
@@ -141,8 +157,6 @@ class VoskInputDevice(
         }
 
         return when {
-            // if the modelUrl is null, then the current locale is not supported by any Vosk model
-            modelUrl == null -> NotAvailable
             // if the model url changed, the model needs to be re-downloaded
             modelUrlChanged -> NotDownloaded(modelUrl)
             // if the model zip file exists, it means that the app was interrupted after the
@@ -467,6 +481,64 @@ class VoskInputDevice(
     }
 
     companion object {
+        /** Name of the single model folder used by versions before models had their own. */
+        private const val LEGACY_MODEL_KEY = "vosk-model"
+        /** Contains the key of the model in use, so that the other ones can be deleted. */
+        private const val ACTIVE_MODEL_FILE = "vosk-active-model"
+
+        fun modelKeyFor(modelUrl: String): String =
+            modelUrl.substringAfterLast('/').removeSuffix(".zip")
+
+        /**
+         * Moves a model downloaded by older versions, which all used the same "vosk-model" folder,
+         * into the files named after its download, so that it does not need to be downloaded again.
+         */
+        private fun migrateLegacyModel(filesDir: File) {
+            val legacyUrlFile = File(filesDir, "$LEGACY_MODEL_KEY-url")
+            if (!legacyUrlFile.exists()) {
+                return
+            }
+            try {
+                val url = legacyUrlFile.readText()
+                val key = modelKeyFor(url)
+                val legacyDir = File(filesDir, LEGACY_MODEL_KEY)
+                val legacyZip = File(filesDir, "$LEGACY_MODEL_KEY.zip")
+                val newDir = File(filesDir, key)
+                val newZip = File(filesDir, "$key.zip")
+                if (legacyDir.isDirectory && !newDir.exists()) {
+                    legacyDir.renameTo(newDir)
+                }
+                if (legacyZip.exists() && !newZip.exists()) {
+                    legacyZip.renameTo(newZip)
+                }
+                if (newDir.isDirectory || newZip.exists()) {
+                    File(filesDir, "$key-url").writeText(url)
+                }
+                legacyDir.deleteRecursively()
+                legacyZip.delete()
+                legacyUrlFile.delete()
+            } catch (e: IOException) {
+                Log.w(TAG, "Can't move the Vosk model of a previous version", e)
+            }
+        }
+
+        /** The files of downloaded models that are not the one currently in use. */
+        fun unusedModelFiles(filesDir: File): List<File> {
+            val activeKey = try {
+                File(filesDir, ACTIVE_MODEL_FILE).readText()
+            } catch (_: IOException) {
+                return listOf()
+            }
+            val activeNames = setOf(activeKey, "$activeKey.zip", "$activeKey-url")
+            return filesDir.listFiles()
+                ?.filter { it.name.startsWith(LEGACY_MODEL_KEY) && it.name !in activeNames }
+                ?: listOf()
+        }
+
+        fun deleteUnusedModels(filesDir: File) {
+            unusedModelFiles(filesDir).forEach { it.deleteRecursively() }
+        }
+
         private const val SAMPLE_RATE = 44100.0f
         private const val ALTERNATIVE_COUNT = 5
         private val TAG = VoskInputDevice::class.simpleName

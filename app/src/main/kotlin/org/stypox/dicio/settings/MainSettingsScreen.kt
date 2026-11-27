@@ -1,6 +1,10 @@
 package org.stypox.dicio.settings
 
 import android.app.Application
+import kotlinx.coroutines.delay
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
+import android.text.format.Formatter
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -198,6 +202,31 @@ private fun MainSettingsScreen(
             voskLargeModel().Render(
                 settings.voskLargeModel,
                 viewModel::setVoskLargeModel
+            )
+        }
+        item {
+            val unusedBytes by viewModel.unusedVoskModelsBytes.collectAsState()
+            LaunchedEffect(settings.voskLargeModel) {
+                // give the speech engine a moment to switch to the newly chosen model
+                delay(1000)
+                viewModel.refreshUnusedVoskModels()
+            }
+            SettingsItem(
+                modifier = if (unusedBytes > 0) {
+                    Modifier.clickable { viewModel.deleteUnusedVoskModels() }
+                } else {
+                    Modifier
+                },
+                title = stringResource(R.string.pref_vosk_delete_unused_title),
+                icon = Icons.Default.DeleteSweep,
+                description = if (unusedBytes > 0) {
+                    stringResource(
+                        R.string.pref_vosk_delete_unused_summary,
+                        Formatter.formatShortFileSize(LocalContext.current, unusedBytes)
+                    )
+                } else {
+                    stringResource(R.string.pref_vosk_delete_unused_none)
+                },
             )
         }
         item {

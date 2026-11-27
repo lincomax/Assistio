@@ -95,7 +95,13 @@ class SkillEvaluatorImpl(
         }
     }
 
-    private suspend fun evaluateMatchingSkill(utterances: List<String>) {
+    private suspend fun evaluateMatchingSkill(rawUtterances: List<String>) {
+        // some speech engines end sentences with punctuation (e.g. "take me to Micro Center."),
+        // which would otherwise end up in what skills capture (places, contacts, app names...)
+        val utterances = rawUtterances.map { utterance ->
+            utterance.trimEnd().trimEnd('.', '!', '?', ',', ';', ':', '…').trimEnd()
+                .ifEmpty { utterance }
+        }
         val (chosenInput, chosenSkill) = try {
             utterances.firstNotNullOfOrNull { input: String ->
                 skillContext.standardMatchHelper = MatchHelper(skillContext.parserFormatter, input)
