@@ -1,0 +1,9 @@
+set:
+  - remind me to|that|about? .what. ((at|on|in|for)? .time.)?
+  - remind me (at|on|in)? .time. to|that|about .what.
+  - (set|create|add|make) a|an? new? reminder to|that|about|for .what. ((at|on|in|for)? .time.)?
+  - (set|create|add|make) a|an? new? reminder (for|at|on|in)? .time. to|that|about .what.
+
+add_task:
+  - add|put .what. to|on my|the? (task<s?>)|(to do list?)|todo<s?>|(todo list)|(task list)
+  - (create|add|make) a|an? new? task to|for? .what.

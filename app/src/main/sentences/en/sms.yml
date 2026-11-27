@@ -1,0 +1,7 @@
+send:
+  - send|write a? (text message?)|sms|message to .who. saying|that|reading .message.
+  - send|write .who. a? (text message?)|sms|message saying|that|reading .message.
+  - text|message|sms .who. saying|that|reading .message.
+  - send|write a? (text message?)|sms|message to .who.
+  - send|write .who. a? (text message?)|sms|message
+  - text|message|sms .who.

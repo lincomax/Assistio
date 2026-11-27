@@ -1,0 +1,4 @@
+New:
+• Text messages: "text Tom saying I'm on my way" or just "text Tom". Assistio reads the message back and sends it only after you say yes
+• Reminders in Tasks.org: "remind me to call mom tomorrow at 5 pm". Creates a task with a due time and a reminder
+• Tasks in Tasks.org: "add buy milk to my tasks"

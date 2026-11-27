@@ -1,5 +1,9 @@
 name: Build and create release
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 permissions:
   contents: write
 
@@ -65,18 +69,18 @@ jobs:
           VERSION: ${{ env.VERSION }}
         run: |
           mkdir apks
-          mv "app/build/outputs/apk/release/app-release-unsigned.apk" "./apks/Dicio_${VERSION}.apk"
+          mv "app/build/outputs/apk/release/app-release-unsigned.apk" "./apks/Assistio_${VERSION}.apk"
 
       - name: Sign APKs
         env:
-          KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
-          KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          KEYSTORE_PASSWORD: ${{ secrets.SIGNING_KEYSTORE_PASSWORD }}
+          KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE }}
+          KEY_ALIAS: dicio
+          KEYSTORE_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           VERSION: ${{ env.VERSION }}
           APKSIGNER: ${{ env.APKSIGNER }}
         run: |
           openssl base64 -A -d -out keystore.jks <<< "$KEYSTORE_BASE64"
-          "$APKSIGNER" sign --ks ./keystore.jks --ks-key-alias "$KEY_ALIAS" --ks-pass "pass:$KEYSTORE_PASSWORD" "./apks/Dicio_${VERSION}.apk"
+          "$APKSIGNER" sign --ks ./keystore.jks --ks-key-alias "$KEY_ALIAS" --ks-pass "pass:$KEYSTORE_PASSWORD" "./apks/Assistio_${VERSION}.apk"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
@@ -102,6 +106,6 @@ jobs:
           tag_name: v${{ env.VERSION }}
           name: v${{ env.VERSION }}
           body_path: __changelog_file__
-          draft: true
+          draft: false
           files: |
-            apks/Dicio_${{ env.VERSION }}.apk
+            apks/Assistio_${{ env.VERSION }}.apk
