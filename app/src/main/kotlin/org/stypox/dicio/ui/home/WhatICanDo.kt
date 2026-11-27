@@ -40,15 +40,7 @@ fun WhatICanDo(skills: List<SkillInfo>) {
             NoEnabledSkills()
 
         } else {
-            Text(
-                text = stringResource(R.string.here_is_what_i_can_do),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-            )
-
+            Spacer(modifier = Modifier.height(8.dp))
             for (skill in skills) {
                 SkillRow(
                     skill = skill,
